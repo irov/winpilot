@@ -14,7 +14,7 @@ namespace Pilot {
 
 class PilotSdk {
 public:
-    static constexpr const char* VERSION = "1.0.35";
+    static constexpr const char* VERSION = "1.0.36";
 
     static void initialize(const PilotConfig& config);
     static bool isInitialized();

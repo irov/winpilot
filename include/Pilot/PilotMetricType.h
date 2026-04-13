@@ -3,27 +3,29 @@
 #include "Pilot/PilotMetricAggregation.h"
 #include "Pilot/PilotTypes.h"
 
+#include <cstring>
+
 namespace Pilot {
 
 class PilotMetricType {
 public:
-    PilotMetricType(const PilotString& key, const PilotString& unit, PilotMetricAggregation aggregation)
+    PilotMetricType(const char* key, const char* unit, PilotMetricAggregation aggregation)
         : m_key(key), m_unit(unit), m_aggregation(aggregation) {}
 
-    const PilotString& key() const { return m_key; }
-    const PilotString& unit() const { return m_unit; }
+    const char* key() const { return m_key; }
+    const char* unit() const { return m_unit; }
     PilotMetricAggregation aggregation() const { return m_aggregation; }
 
-    bool operator==(const PilotMetricType& o) const { return m_key == o.m_key; }
-    bool operator!=(const PilotMetricType& o) const { return m_key != o.m_key; }
+    bool operator==(const PilotMetricType& o) const { return strcmp(m_key, o.m_key) == 0; }
+    bool operator!=(const PilotMetricType& o) const { return strcmp(m_key, o.m_key) != 0; }
 
-    static PilotMetricType create(const PilotString& key) {
+    static PilotMetricType create(const char* key) {
         return PilotMetricType(key, "", PilotMetricAggregation::GAUGE);
     }
-    static PilotMetricType create(const PilotString& key, const PilotString& unit) {
+    static PilotMetricType create(const char* key, const char* unit) {
         return PilotMetricType(key, unit, PilotMetricAggregation::GAUGE);
     }
-    static PilotMetricType create(const PilotString& key, const PilotString& unit, PilotMetricAggregation agg) {
+    static PilotMetricType create(const char* key, const char* unit, PilotMetricAggregation agg) {
         return PilotMetricType(key, unit, agg);
     }
 
@@ -38,8 +40,8 @@ public:
     static const PilotMetricType THREAD_COUNT;
 
 private:
-    PilotString m_key;
-    PilotString m_unit;
+    const char* m_key;
+    const char* m_unit;
     PilotMetricAggregation m_aggregation;
 };
 
