@@ -8,13 +8,6 @@ enum class PilotMetricAggregation {
     RATE
 };
 
-inline const char* pilotMetricAggregationKey(PilotMetricAggregation a) {
-    switch (a) {
-        case PilotMetricAggregation::GAUGE: return "gauge";
-        case PilotMetricAggregation::COUNTER: return "counter";
-        case PilotMetricAggregation::RATE: return "rate";
-    }
-    return "gauge";
-}
+const char* pilotMetricAggregationKey(PilotMetricAggregation a);
 
 } // namespace Pilot

@@ -7,17 +7,17 @@ namespace Pilot {
 
 class PilotLogConfigBuilder {
 public:
-    PilotLogConfigBuilder& setEnabled(bool v) { m_enabled = v; return *this; }
-    PilotLogConfigBuilder& setLogLevel(PilotLogLevel v) { m_logLevel = v; return *this; }
-    PilotLogConfigBuilder& setBatchSize(int v) { m_batchSize = v; return *this; }
-    PilotLogConfigBuilder& setBufferSize(int v) { m_bufferSize = v; return *this; }
-    PilotLogConfigBuilder& setAttributes(const PilotLogAttributeBuilder& v) { m_attributes = v; return *this; }
+    PilotLogConfigBuilder& setEnabled(bool v);
+    PilotLogConfigBuilder& setLogLevel(PilotLogLevel v);
+    PilotLogConfigBuilder& setBatchSize(int v);
+    PilotLogConfigBuilder& setBufferSize(int v);
+    PilotLogConfigBuilder& setAttributes(const PilotLogAttributeBuilder& v);
 
-    bool isEnabled() const { return m_enabled; }
-    PilotLogLevel logLevel() const { return m_logLevel; }
-    int batchSize() const { return m_batchSize; }
-    int bufferSize() const { return m_bufferSize; }
-    const PilotLogAttributeBuilder& attributes() const { return m_attributes; }
+    bool isEnabled() const;
+    PilotLogLevel logLevel() const;
+    int batchSize() const;
+    int bufferSize() const;
+    const PilotLogAttributeBuilder& attributes() const;
 
 private:
     bool m_enabled = true;

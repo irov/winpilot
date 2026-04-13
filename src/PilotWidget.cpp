@@ -14,6 +14,26 @@ PilotWidget::PilotWidget(PilotUI& ui, const PilotString& type)
     m_json.put("id", PilotJson(m_internalId));
 }
 
+int PilotWidget::internalId() const {
+    return m_internalId;
+}
+
+const PilotString& PilotWidget::publicId() const {
+    return m_publicId;
+}
+
+void PilotWidget::setId(const PilotString& id) {
+    m_publicId = id;
+}
+
+const PilotString& PilotWidget::widgetType() const {
+    return m_type;
+}
+
+PilotJson PilotWidget::toJson() const {
+    return m_json;
+}
+
 void PilotWidget::put(const PilotString& key, const PilotJson& value) {
     m_json.put(key, value);
     m_ui.incrementRevision();

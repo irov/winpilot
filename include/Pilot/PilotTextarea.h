@@ -8,13 +8,10 @@ namespace Pilot {
 
 class PilotTextarea : public PilotWidget {
 public:
-    PilotTextarea(PilotUI& ui, const PilotString& label)
-        : PilotWidget(ui, "textarea") {
-        put("label", PilotJson(label));
-    }
+    PilotTextarea(PilotUI& ui, const PilotString& label);
 
-    PilotTextarea& rows(int r) { put("rows", PilotJson(r)); return *this; }
-    PilotTextarea& defaultValue(const PilotString& v) { put("defaultValue", PilotJson(v)); return *this; }
+    PilotTextarea& rows(int r);
+    PilotTextarea& defaultValue(const PilotString& v);
 
     PilotTextarea& onSubmit(PilotWidgetCallback* callback);
     PilotTextarea& onSubmit(PilotWidgetCallbackFunc callback);

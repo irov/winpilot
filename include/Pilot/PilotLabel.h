@@ -6,18 +6,12 @@ namespace Pilot {
 
 class PilotLabel : public PilotWidget {
 public:
-    PilotLabel(PilotUI& ui, const PilotString& text)
-        : PilotWidget(ui, "label") {
-        put("text", PilotJson(text));
-    }
+    PilotLabel(PilotUI& ui, const PilotString& text);
 
-    PilotLabel& text(const PilotString& t) { put("text", PilotJson(t)); return *this; }
-    PilotLabel& color(const PilotString& c) { put("color", PilotJson(c)); return *this; }
+    PilotLabel& text(const PilotString& t);
+    PilotLabel& color(const PilotString& c);
 
-    PilotLabel& textProvider(PilotValueProvider* provider) {
-        setProvider("text", provider);
-        return *this;
-    }
+    PilotLabel& textProvider(PilotValueProvider* provider);
 };
 
 } // namespace Pilot

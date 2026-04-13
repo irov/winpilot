@@ -8,12 +8,9 @@ namespace Pilot {
 
 class PilotSwitch : public PilotWidget {
 public:
-    PilotSwitch(PilotUI& ui, const PilotString& label)
-        : PilotWidget(ui, "switch") {
-        put("label", PilotJson(label));
-    }
+    PilotSwitch(PilotUI& ui, const PilotString& label);
 
-    PilotSwitch& defaultValue(bool v) { put("defaultValue", PilotJson(v)); return *this; }
+    PilotSwitch& defaultValue(bool v);
 
     PilotSwitch& onChange(PilotWidgetCallback* callback);
     PilotSwitch& onChange(PilotWidgetCallbackFunc callback);

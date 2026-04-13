@@ -8,14 +8,11 @@ namespace Pilot {
 
 class PilotInput : public PilotWidget {
 public:
-    PilotInput(PilotUI& ui, const PilotString& label)
-        : PilotWidget(ui, "input") {
-        put("label", PilotJson(label));
-    }
+    PilotInput(PilotUI& ui, const PilotString& label);
 
-    PilotInput& inputType(const PilotString& t) { put("inputType", PilotJson(t)); return *this; }
-    PilotInput& defaultValue(const PilotString& v) { put("defaultValue", PilotJson(v)); return *this; }
-    PilotInput& placeholder(const PilotString& p) { put("placeholder", PilotJson(p)); return *this; }
+    PilotInput& inputType(const PilotString& t);
+    PilotInput& defaultValue(const PilotString& v);
+    PilotInput& placeholder(const PilotString& p);
 
     PilotInput& onSubmit(PilotWidgetCallback* callback);
     PilotInput& onSubmit(PilotWidgetCallbackFunc callback);

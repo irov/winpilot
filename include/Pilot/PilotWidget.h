@@ -13,13 +13,13 @@ public:
     PilotWidget(PilotUI& ui, const PilotString& type);
     ~PilotWidget() override = default;
 
-    int internalId() const { return m_internalId; }
-    const PilotString& publicId() const { return m_publicId; }
-    void setId(const PilotString& id) { m_publicId = id; }
-    const PilotString& widgetType() const { return m_type; }
+    int internalId() const;
+    const PilotString& publicId() const;
+    void setId(const PilotString& id);
+    const PilotString& widgetType() const;
 
     bool pollProvider();
-    PilotJson toJson() const override { return m_json; }
+    PilotJson toJson() const override;
 
 protected:
     void put(const PilotString& key, const PilotJson& value);

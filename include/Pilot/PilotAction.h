@@ -8,30 +8,18 @@ namespace Pilot {
 
 class PilotAction {
 public:
-    PilotAction() : m_widgetId(0), m_actionType(PilotActionType::UNKNOWN), m_status(PilotActionStatus::UNKNOWN) {}
-
+    PilotAction();
     PilotAction(const PilotString& id, const PilotString& sessionId, int widgetId,
-                PilotActionType actionType, PilotActionStatus status, const PilotJson& payload)
-        : m_id(id), m_sessionId(sessionId), m_widgetId(widgetId)
-        , m_actionType(actionType), m_status(status), m_payload(payload) {}
+                PilotActionType actionType, PilotActionStatus status, const PilotJson& payload);
 
-    const PilotString& id() const { return m_id; }
-    const PilotString& sessionId() const { return m_sessionId; }
-    int widgetId() const { return m_widgetId; }
-    PilotActionType actionType() const { return m_actionType; }
-    PilotActionStatus actionStatus() const { return m_status; }
-    const PilotJson& payload() const { return m_payload; }
+    const PilotString& id() const;
+    const PilotString& sessionId() const;
+    int widgetId() const;
+    PilotActionType actionType() const;
+    PilotActionStatus actionStatus() const;
+    const PilotJson& payload() const;
 
-    static PilotAction fromJson(const PilotJson& json) {
-        return PilotAction(
-            json.optString("id"),
-            json.optString("session_id"),
-            json.optInt("widget_id", 0),
-            pilotActionTypeFromValue(json.optString("action_type")),
-            pilotActionStatusFromValue(json.optString("status")),
-            json.optObject("payload")
-        );
-    }
+    static PilotAction fromJson(const PilotJson& json);
 
 private:
     PilotString m_id;
