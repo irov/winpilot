@@ -1,21 +1,15 @@
-#include <Pilot/PilotLog.h>
+#include "Pilot/PilotLog.h"
 
 #include <cstdio>
 #include <cstdarg>
 
 #ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-// Restore ERROR after windows.h might undefine it
-#pragma push_macro("ERROR")
-#undef ERROR
+#include "PilotWin32.h"
 #endif
 
 namespace Pilot {
 
-PilotLogLevel PilotLog::s_level = PilotLogLevel::INFO;
+PilotLogLevel PilotLog::s_level = PilotLogLevel::PL_INFO;
 PilotLoggerListener* PilotLog::s_listener = nullptr;
 const char* PilotLog::TAG = "PilotSDK";
 
@@ -54,33 +48,29 @@ void PilotLog::logMessage(PilotLogLevel level, const char* fmt, va_list args) {
 void PilotLog::d(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    logMessage(PilotLogLevel::DEBUG, fmt, args);
+    logMessage(PilotLogLevel::PL_DEBUG, fmt, args);
     va_end(args);
 }
 
 void PilotLog::i(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    logMessage(PilotLogLevel::INFO, fmt, args);
+    logMessage(PilotLogLevel::PL_INFO, fmt, args);
     va_end(args);
 }
 
 void PilotLog::w(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    logMessage(PilotLogLevel::WARNING, fmt, args);
+    logMessage(PilotLogLevel::PL_WARNING, fmt, args);
     va_end(args);
 }
 
 void PilotLog::e(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    logMessage(PilotLogLevel::ERROR, fmt, args);
+    logMessage(PilotLogLevel::PL_ERROR, fmt, args);
     va_end(args);
 }
 
 } // namespace Pilot
-
-#ifdef _WIN32
-#pragma pop_macro("ERROR")
-#endif

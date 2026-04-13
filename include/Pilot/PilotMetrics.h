@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Pilot/PilotMetricEntry.h>
-#include <Pilot/PilotMetricCollector.h>
+#include "Pilot/PilotMetricEntry.h"
+#include "Pilot/PilotMetricCollector.h"
 #include <algorithm>
 #include <cstdint>
 

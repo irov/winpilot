@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Pilot/PilotJson.h>
-#include <Pilot/PilotLogLevel.h>
+#include "Pilot/PilotJson.h"
+#include "Pilot/PilotLogLevel.h"
 #include <cstdint>
 
 namespace Pilot {

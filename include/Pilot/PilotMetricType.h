@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Pilot/PilotMetricAggregation.h>
-#include <Pilot/PilotTypes.h>
+#include "Pilot/PilotMetricAggregation.h"
+#include "Pilot/PilotTypes.h"
 
 namespace Pilot {
 

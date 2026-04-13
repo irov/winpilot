@@ -1,22 +1,16 @@
 #pragma once
 
-// Windows headers define ERROR as a macro — protect our enum
-#pragma push_macro("ERROR")
-#undef ERROR
-
 namespace Pilot {
 
 enum class PilotSessionStatus {
-    DISCONNECTED,
-    CONNECTING,
-    WAITING_APPROVAL,
-    ACTIVE,
-    AUTH_FAILED,
-    REJECTED,
-    CLOSED,
-    ERROR
+    PL_DISCONNECTED,
+    PL_CONNECTING,
+    PL_WAITING_APPROVAL,
+    PL_ACTIVE,
+    PL_AUTH_FAILED,
+    PL_REJECTED,
+    PL_CLOSED,
+    PL_ERROR
 };
 
 } // namespace Pilot
-
-#pragma pop_macro("ERROR")

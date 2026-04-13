@@ -1,5 +1,5 @@
-#include <Pilot/PilotTab.h>
-#include <Pilot/PilotUI.h>
+#include "Pilot/PilotTab.h"
+#include "Pilot/PilotUI.h"
 
 namespace Pilot {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Pilot/PilotWidget.h>
+#include "Pilot/PilotWidget.h"
 
 namespace Pilot {
 

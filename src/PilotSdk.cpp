@@ -1,16 +1,11 @@
-#include <Pilot/PilotSdk.h>
-#include <Pilot/PilotHttpClient.h>
-#include <Pilot/PilotDefaultMetricCollector.h>
-#include <Pilot/PilotLog.h>
-#include <Pilot/PilotAction.h>
-#include <Pilot/PilotException.h>
+#include "Pilot/PilotSdk.h"
+#include "Pilot/PilotHttpClient.h"
+#include "Pilot/PilotDefaultMetricCollector.h"
+#include "Pilot/PilotLog.h"
+#include "Pilot/PilotAction.h"
+#include "Pilot/PilotException.h"
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#pragma push_macro("ERROR")
-#undef ERROR
+#include "PilotWin32.h"
 
 #include <chrono>
 #include <algorithm>
@@ -37,7 +32,7 @@ public:
     PilotHttpClient httpClient;
     PilotString sessionToken;
     PilotMutex sessionTokenMutex;
-    PilotAtomic<PilotSessionStatus> status{PilotSessionStatus::DISCONNECTED};
+    PilotAtomic<PilotSessionStatus> status{PilotSessionStatus::PL_DISCONNECTED};
     PilotUI ui;
     PilotMetrics metrics;
     PilotDefaultMetricCollector defaultMetricCollector;
@@ -162,7 +157,7 @@ bool PilotSdk::isInitialized() {
 
 PilotSessionStatus PilotSdk::status() {
     auto* p = s_instance;
-    return p ? p->status.load() : PilotSessionStatus::DISCONNECTED;
+    return p ? p->status.load() : PilotSessionStatus::PL_DISCONNECTED;
 }
 
 void PilotSdk::addActionListener(PilotActionListener* listener) {
@@ -273,7 +268,7 @@ static void bufferStructuredLog(PilotInstance* p, const PilotString& kind,
     merged["pilot_kind"] = PilotJson(kind);
 
     p->bufferLog(PilotLogEntry(
-        PilotLogLevel::INFO, message, resolvedCategory, PilotString(),
+        PilotLogLevel::PL_INFO, message, resolvedCategory, PilotString(),
         merged, p->resolveLogAttributes(), clientTimestampMs));
 }
 
@@ -400,10 +395,10 @@ void PilotInstance::stopConnection() {
             flushMetrics(token);
             httpClient.closeSession(token);
         } catch (...) {}
-        setStatus(PilotSessionStatus::CLOSED);
+        setStatus(PilotSessionStatus::PL_CLOSED);
         notifySessionClosed();
     } else {
-        setStatus(PilotSessionStatus::DISCONNECTED);
+        setStatus(PilotSessionStatus::PL_DISCONNECTED);
     }
 }
 
@@ -503,14 +498,14 @@ void PilotInstance::connectAndWaitApproval() {
         } catch (const PilotException& e) {
             if (e.isUnauthorized()) {
                 PilotLog::e("Authentication failed: %s", e.what());
-                setStatus(PilotSessionStatus::AUTH_FAILED);
+                setStatus(PilotSessionStatus::PL_AUTH_FAILED);
                 m_running.store(false);
                 notifyAuthFailed();
                 return;
             }
             if (!e.isNetworkError()) {
                 PilotLog::e("Server error, stopping connection: %s", e.what());
-                setStatus(PilotSessionStatus::ERROR);
+                setStatus(PilotSessionStatus::PL_ERROR);
                 m_running.store(false);
                 notifyError(e);
                 return;
@@ -519,7 +514,7 @@ void PilotInstance::connectAndWaitApproval() {
             retryCount++;
             PilotLog::w("Connection attempt %d failed (network): %s, retrying in %lldms",
                         retryCount, e.what(), static_cast<long long>(retryDelayMs));
-            setStatus(PilotSessionStatus::CONNECTING);
+            setStatus(PilotSessionStatus::PL_CONNECTING);
             interruptibleSleep(retryDelayMs);
             retryDelayMs = std::min(retryDelayMs * 2, maxRetryDelayMs);
         }
@@ -527,7 +522,7 @@ void PilotInstance::connectAndWaitApproval() {
 }
 
 void PilotInstance::doConnectAndWaitApproval() {
-    setStatus(PilotSessionStatus::CONNECTING);
+    setStatus(PilotSessionStatus::PL_CONNECTING);
     notifyConnecting();
 
     PilotString deviceId = config.deviceId();
@@ -561,7 +556,7 @@ void PilotInstance::doConnectAndWaitApproval() {
         return;
     }
 
-    setStatus(PilotSessionStatus::WAITING_APPROVAL);
+    setStatus(PilotSessionStatus::PL_WAITING_APPROVAL);
     notifyWaitingApproval(resp.requestId());
 
     while (m_running.load()) {
@@ -587,7 +582,7 @@ void PilotInstance::onApproved(const PilotString& token) {
         std::lock_guard<PilotMutex> lock(sessionTokenMutex);
         sessionToken = token;
     }
-    setStatus(PilotSessionStatus::ACTIVE);
+    setStatus(PilotSessionStatus::PL_ACTIVE);
     PilotLog::i("Session approved and active");
     notifySessionStarted(token);
 
@@ -615,7 +610,7 @@ void PilotInstance::onApproved(const PilotString& token) {
 
 void PilotInstance::onRejected() {
     PilotLog::w("Connection request rejected");
-    setStatus(PilotSessionStatus::REJECTED);
+    setStatus(PilotSessionStatus::PL_REJECTED);
     m_running.store(false);
     notifyRejected();
 }
@@ -771,7 +766,7 @@ void PilotInstance::flushMetrics(const PilotString& token) {
 // ── Reconnection ──
 
 void PilotInstance::attemptReconnect(const PilotString& token) {
-    setStatus(PilotSessionStatus::CONNECTING);
+    setStatus(PilotSessionStatus::PL_CONNECTING);
 
     int64_t retryDelay = 2000;
     const int64_t maxDelay = 30000;
@@ -783,7 +778,7 @@ void PilotInstance::attemptReconnect(const PilotString& token) {
         try {
             httpClient.pollActions(token, nullptr, {}, {});
             PilotLog::i("Reconnect successful, session still active");
-            setStatus(PilotSessionStatus::ACTIVE);
+            setStatus(PilotSessionStatus::PL_ACTIVE);
             return;
         } catch (const PilotException& e) {
             if (e.isNetworkError()) {
@@ -804,7 +799,7 @@ void PilotInstance::resetAndRestart() {
         std::lock_guard<PilotMutex> lock(sessionTokenMutex);
         sessionToken.clear();
     }
-    setStatus(PilotSessionStatus::DISCONNECTED);
+    setStatus(PilotSessionStatus::PL_DISCONNECTED);
     notifySessionClosed();
     startConnection();
 }
@@ -847,5 +842,3 @@ void PilotInstance::notifyError(const PilotException& e) {
 }
 
 } // namespace Pilot
-
-#pragma pop_macro("ERROR")

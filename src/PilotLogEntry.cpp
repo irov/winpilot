@@ -1,4 +1,4 @@
-#include <Pilot/PilotLogEntry.h>
+#include "Pilot/PilotLogEntry.h"
 
 #include <chrono>
 #include <ctime>
@@ -76,10 +76,10 @@ PilotJson PilotLogEntry::toJson() const {
 PilotString PilotLogEntry::formatTimestamp(int64_t ms) { return formatTimestampImpl(ms); }
 int64_t PilotLogEntry::currentTimeMs() { return currentTimeMsImpl(); }
 
-PilotLogEntry PilotLogEntry::debug(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::DEBUG, msg); }
-PilotLogEntry PilotLogEntry::info(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::INFO, msg); }
-PilotLogEntry PilotLogEntry::warning(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::WARNING, msg); }
-PilotLogEntry PilotLogEntry::error(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::ERROR, msg); }
-PilotLogEntry PilotLogEntry::critical(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::CRITICAL, msg); }
+PilotLogEntry PilotLogEntry::debug(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::PL_DEBUG, msg); }
+PilotLogEntry PilotLogEntry::info(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::PL_INFO, msg); }
+PilotLogEntry PilotLogEntry::warning(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::PL_WARNING, msg); }
+PilotLogEntry PilotLogEntry::error(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::PL_ERROR, msg); }
+PilotLogEntry PilotLogEntry::critical(const PilotString& msg) { return PilotLogEntry(PilotLogLevel::PL_CRITICAL, msg); }
 
 } // namespace Pilot

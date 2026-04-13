@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Pilot/PilotWidget.h>
-#include <Pilot/PilotWidgetCallback.h>
+#include "Pilot/PilotWidget.h"
+#include "Pilot/PilotWidgetCallback.h"
 
 namespace Pilot {
 

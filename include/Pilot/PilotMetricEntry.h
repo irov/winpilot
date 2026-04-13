@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Pilot/PilotJson.h>
-#include <Pilot/PilotMetricType.h>
+#include "Pilot/PilotJson.h"
+#include "Pilot/PilotMetricType.h"
 #include <cstdint>
 #include <chrono>
 

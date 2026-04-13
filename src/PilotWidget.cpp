@@ -1,6 +1,6 @@
-#include <Pilot/PilotWidget.h>
-#include <Pilot/PilotUI.h>
-#include <Pilot/PilotLog.h>
+#include "Pilot/PilotWidget.h"
+#include "Pilot/PilotUI.h"
+#include "Pilot/PilotLog.h"
 
 namespace Pilot {
 

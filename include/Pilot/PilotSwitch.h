@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Pilot/PilotWidget.h>
-#include <Pilot/PilotWidgetCallback.h>
-#include <Pilot/PilotWidgetActions.h>
+#include "Pilot/PilotWidget.h"
+#include "Pilot/PilotWidgetCallback.h"
+#include "Pilot/PilotWidgetActions.h"
 
 namespace Pilot {
 

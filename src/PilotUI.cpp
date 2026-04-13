@@ -1,7 +1,7 @@
-#include <Pilot/PilotUI.h>
-#include <Pilot/PilotTab.h>
-#include <Pilot/PilotWidget.h>
-#include <Pilot/PilotLog.h>
+#include "Pilot/PilotUI.h"
+#include "Pilot/PilotTab.h"
+#include "Pilot/PilotWidget.h"
+#include "Pilot/PilotLog.h"
 
 #include <algorithm>
 

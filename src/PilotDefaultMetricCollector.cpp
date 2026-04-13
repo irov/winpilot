@@ -1,10 +1,7 @@
-#include <Pilot/PilotDefaultMetricCollector.h>
-#include <Pilot/PilotLog.h>
+#include "Pilot/PilotDefaultMetricCollector.h"
+#include "Pilot/PilotLog.h"
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+#include "PilotWin32.h"
 #include <psapi.h>
 
 namespace Pilot {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Pilot/PilotLogLevel.h>
-#include <Pilot/PilotLogAttributeBuilder.h>
+#include "Pilot/PilotLogLevel.h"
+#include "Pilot/PilotLogAttributeBuilder.h"
 
 namespace Pilot {
 
@@ -21,7 +21,7 @@ public:
 
 private:
     bool m_enabled = true;
-    PilotLogLevel m_logLevel = PilotLogLevel::INFO;
+    PilotLogLevel m_logLevel = PilotLogLevel::PL_INFO;
     int m_batchSize = 100;
     int m_bufferSize = 1000;
     PilotLogAttributeBuilder m_attributes;

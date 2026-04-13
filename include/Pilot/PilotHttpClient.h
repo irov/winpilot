@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Pilot/PilotJson.h>
-#include <Pilot/PilotConnectResponse.h>
-#include <Pilot/PilotLogEntry.h>
-#include <Pilot/PilotMetricEntry.h>
+#include "Pilot/PilotJson.h"
+#include "Pilot/PilotConnectResponse.h"
+#include "Pilot/PilotLogEntry.h"
+#include "Pilot/PilotMetricEntry.h"
 
 namespace Pilot {
 
