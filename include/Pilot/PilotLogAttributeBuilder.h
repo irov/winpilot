@@ -1,0 +1,27 @@
+#pragma once
+
+#include <Pilot/PilotValueProvider.h>
+
+namespace Pilot {
+
+class PilotLogAttributeBuilder {
+public:
+    PilotLogAttributeBuilder& put(const PilotString& key, const PilotString& value) {
+        m_staticAttributes[key] = value;
+        return *this;
+    }
+
+    PilotLogAttributeBuilder& putProvider(const PilotString& key, PilotValueProvider* provider) {
+        m_dynamicAttributes[key] = provider;
+        return *this;
+    }
+
+    const PilotMap<PilotString, PilotString>& staticAttributes() const { return m_staticAttributes; }
+    const PilotMap<PilotString, PilotValueProvider*>& dynamicAttributes() const { return m_dynamicAttributes; }
+
+private:
+    PilotMap<PilotString, PilotString> m_staticAttributes;
+    PilotMap<PilotString, PilotValueProvider*> m_dynamicAttributes;
+};
+
+} // namespace Pilot
