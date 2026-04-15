@@ -26,6 +26,7 @@ public:
     void acknowledgeAction(const PilotString& sessionToken, const PilotString& actionId, const PilotJson& ackPayload);
     void sendLogs(const PilotString& sessionToken, const PilotVector<PilotLogEntry>& logs);
     void sendMetrics(const PilotString& sessionToken, const PilotVector<PilotMetricEntry>& metrics);
+    PilotJson getLivePublisherState(const PilotString& sessionToken);
 
 private:
     PilotJson executeRequest(const PilotString& method, const PilotString& path,

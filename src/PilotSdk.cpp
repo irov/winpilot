@@ -1,5 +1,6 @@
 #include "Pilot/PilotSdk.h"
 #include "Pilot/PilotHttpClient.h"
+#include "Pilot/PilotLiveManager.h"
 #include "Pilot/PilotDefaultMetricCollector.h"
 #include "Pilot/PilotLog.h"
 #include "Pilot/PilotAction.h"
@@ -30,6 +31,7 @@ public:
 
     PilotConfig config;
     PilotHttpClient httpClient;
+    PilotLiveManager liveManager;
     PilotString sessionToken;
     PilotMutex sessionTokenMutex;
     PilotAtomic<PilotSessionStatus> status{PilotSessionStatus::PL_DISCONNECTED};
@@ -198,6 +200,11 @@ PilotMetrics& PilotSdk::getMetrics() {
     return requireInstance()->metrics;
 }
 
+void PilotSdk::setScreenCaptureProvider(PilotScreenCaptureProvider* provider) {
+    auto* p = requireInstance();
+    if (p) p->liveManager.setScreenCaptureProvider(provider);
+}
+
 void PilotSdk::connect() {
     auto* p = requireInstance();
     if (p) p->startConnection();
@@ -346,9 +353,18 @@ void PilotSdk::shutdown() {
 PilotInstance::PilotInstance(const PilotConfig& config)
     : config(config)
     , httpClient(config.baseUrl(), config.apiToken())
+    , liveManager(httpClient)
     , m_currentActionPollIntervalMs(config.actionPollIntervalMs()) {
     PilotLog::setLevel(config.logConfig().logLevel());
     PilotLog::setLoggerListener(config.loggerListener());
+
+    liveManager.setOnLiveModeChanged([this](bool isLive, int64_t pollIntervalMs) {
+        if (isLive && pollIntervalMs > 0) {
+            m_currentActionPollIntervalMs = pollIntervalMs;
+        } else {
+            m_currentActionPollIntervalMs = this->config.actionPollIntervalMs();
+        }
+    });
 
     auto& mc = config.metricConfig();
     if (mc.isEnabled()) {
@@ -373,6 +389,8 @@ void PilotInstance::startConnection() {
 
 void PilotInstance::stopConnection() {
     if (!m_running.exchange(false)) return;
+
+    liveManager.onSessionClosed();
 
     // Wake up sleeping threads
     m_sleepCv.notify_all();
@@ -404,6 +422,7 @@ void PilotInstance::stopConnection() {
 
 void PilotInstance::doShutdown() {
     PilotLog::i("Shutting down Pilot SDK");
+    liveManager.shutdown();
     stopConnection();
     httpClient.shutdown();
     {
@@ -458,7 +477,49 @@ void PilotInstance::dispatchQueuedActions() {
         actions.swap(m_actionQueue);
     }
 
+    PilotString token;
+    {
+        std::lock_guard<PilotMutex> lock(sessionTokenMutex);
+        token = sessionToken;
+    }
+
     for (const auto& action : actions) {
+        // Intercept LIVE_* actions internally
+        PilotActionType type = action.actionType();
+        if (type == PilotActionType::LIVE_START || type == PilotActionType::LIVE_UPDATE ||
+            type == PilotActionType::LIVE_STOP || type == PilotActionType::LIVE_TAP ||
+            type == PilotActionType::LIVE_LONG_PRESS) {
+            PilotJson ack;
+            switch (type) {
+                case PilotActionType::LIVE_START:
+                    ack = liveManager.handleStart(token, action.payload());
+                    break;
+                case PilotActionType::LIVE_UPDATE:
+                    ack = liveManager.handleUpdate(token, action.payload());
+                    break;
+                case PilotActionType::LIVE_STOP:
+                    ack = liveManager.handleStop();
+                    break;
+                case PilotActionType::LIVE_TAP:
+                    ack = liveManager.handleTap(action.payload());
+                    break;
+                case PilotActionType::LIVE_LONG_PRESS:
+                    ack = liveManager.handleLongPress(action.payload());
+                    break;
+                default:
+                    break;
+            }
+
+            if (!ack.isNull() && !action.id().empty() && !token.empty()) {
+                try {
+                    httpClient.acknowledgeAction(token, action.id(), ack);
+                } catch (const PilotException& e) {
+                    PilotLog::e("Failed to acknowledge live action: %s", e.what());
+                }
+            }
+            continue;
+        }
+
         bool handled = false;
         try {
             handled = ui.dispatchAction(action);

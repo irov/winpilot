@@ -283,4 +283,9 @@ void PilotHttpClient::sendMetrics(const PilotString& sessionToken, const PilotVe
                    "X-Session-Token", sessionToken, body.toString());
 }
 
+PilotJson PilotHttpClient::getLivePublisherState(const PilotString& sessionToken) {
+    return executeRequest("GET", "/api/client/session/live/publisher",
+                          "X-Session-Token", sessionToken, "");
+}
+
 } // namespace Pilot
