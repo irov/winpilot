@@ -7,7 +7,9 @@ namespace Pilot {
 
 class PilotHttpClient;
 class PilotScreenCaptureProvider;
+#ifndef PILOT_NO_LIVEKIT
 class PilotLiveKitPublisher;
+#endif
 
 class PilotLiveManager {
 public:
@@ -59,7 +61,9 @@ private:
     PilotScreenCaptureProvider* m_captureProvider;
     PilotFunction<void(bool, int64_t)> m_onLiveModeChanged;
 
+#ifndef PILOT_NO_LIVEKIT
     PilotUniquePtr<PilotLiveKitPublisher> m_publisher;
+#endif
 
     mutable PilotMutex m_mutex;
     PilotAtomic<bool> m_isLive{false};

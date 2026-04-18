@@ -1,5 +1,7 @@
 #include "Pilot/PilotLiveManager.h"
+#ifndef PILOT_NO_LIVEKIT
 #include "PilotLiveKitPublisher.h"
+#endif
 #include "Pilot/PilotHttpClient.h"
 #include "Pilot/PilotScreenCaptureProvider.h"
 #include "Pilot/PilotException.h"
@@ -61,7 +63,10 @@ PilotLiveManager::PilotLiveManager(PilotHttpClient& httpClient)
     : m_httpClient(httpClient)
     , m_captureProvider(nullptr)
     , m_liveSettings(LiveSettings::low())
-    , m_publisher(new PilotLiveKitPublisher()) {
+#ifndef PILOT_NO_LIVEKIT
+    , m_publisher(new PilotLiveKitPublisher())
+#endif
+{
 }
 
 PilotLiveManager::~PilotLiveManager() {
@@ -83,6 +88,10 @@ bool PilotLiveManager::isLive() const {
 }
 
 PilotJson PilotLiveManager::handleStart(const PilotString& sessionToken, const PilotJson& payload) {
+#ifdef PILOT_NO_LIVEKIT
+    PilotLog::w("Live streaming is not supported on this platform (x86)");
+    return buildAck(false, "live_not_supported_on_x86");
+#else
     bool wasLive = m_isLive.load();
     stopLiveRuntime();
 
@@ -150,9 +159,14 @@ PilotJson PilotLiveManager::handleStart(const PilotString& sessionToken, const P
         PilotLog::e("Failed to start live: unknown error");
         return buildAck(false, "unknown_error");
     }
+#endif
 }
 
 PilotJson PilotLiveManager::handleUpdate(const PilotString& sessionToken, const PilotJson& payload) {
+#ifdef PILOT_NO_LIVEKIT
+    PilotLog::w("Live streaming is not supported on this platform (x86)");
+    return buildAck(false, "live_not_supported_on_x86");
+#else
     if (!m_isLive.load()) {
         return buildAck(false, "Live is not active");
     }
@@ -200,9 +214,13 @@ PilotJson PilotLiveManager::handleUpdate(const PilotString& sessionToken, const 
         PilotLog::e("Failed to update live quality: unknown error");
         return buildAck(false, "unknown_error");
     }
+#endif
 }
 
 PilotJson PilotLiveManager::handleStop() {
+#ifdef PILOT_NO_LIVEKIT
+    return buildAck(true, "live_not_supported_on_x86");
+#else
     bool wasLive = m_isLive.load();
     stopLiveRuntime();
 
@@ -218,6 +236,7 @@ PilotJson PilotLiveManager::handleStop() {
     }
 
     return buildAck(true, wasLive ? "live_stopped" : "live_already_stopped");
+#endif
 }
 
 PilotJson PilotLiveManager::handleTap(const PilotJson& payload) {
@@ -257,7 +276,9 @@ void PilotLiveManager::stopLiveRuntime() {
         m_captureThread.join();
     }
 
+#ifndef PILOT_NO_LIVEKIT
     m_publisher->stop();
+#endif
 
     std::lock_guard<PilotMutex> lock(m_mutex);
     m_liveSettings = LiveSettings::low();
@@ -336,7 +357,9 @@ void PilotLiveManager::frameCaptureLoop() {
 
         if (captured && frame.data && frame.dataSize > 0) {
             try {
+#ifndef PILOT_NO_LIVEKIT
                 m_publisher->pushFrame(frame.data, frame.width, frame.height);
+#endif
             } catch (const PilotException& e) {
                 PilotLog::w("Failed to push live frame: %s", e.what());
             }

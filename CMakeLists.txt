@@ -16,7 +16,18 @@ target_include_directories(winpilot PUBLIC include)
 target_include_directories(winpilot PRIVATE src)
 target_link_libraries(winpilot PRIVATE wininet psapi)
 
-if(NOT LIVEKIT_SDK_DIR)
+# ---- LiveKit availability ----
+# LiveKit Rust FFI only supports x64/arm64 on Windows.
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(PILOT_ENABLE_LIVEKIT OFF)
+    message(STATUS "winpilot: LiveKit disabled (Win32/x86 is not supported by LiveKit Rust FFI)")
+else()
+    set(PILOT_ENABLE_LIVEKIT ON)
+endif()
+
+if(NOT PILOT_ENABLE_LIVEKIT)
+    target_compile_definitions(winpilot PRIVATE PILOT_NO_LIVEKIT)
+elseif(NOT LIVEKIT_SDK_DIR)
     include(FetchContent)
     set(BUILD_SHARED_LIBS OFF)
 
@@ -92,9 +103,6 @@ if(NOT LIVEKIT_SDK_DIR)
     find_program(CARGO_EXECUTABLE NAMES cargo REQUIRED)
 
     set(RUST_ROOT "${LIVEKIT_RUST_DIR}")
-    if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
-        message(FATAL_ERROR "LiveKit Rust FFI is not supported for Win32/x86. rust-sdks publishes Windows WebRTC artifacts only for x64/arm64.")
-    endif()
     if(DEFINED ENV{PILOT_RUST_TARGET_DIR} AND NOT "$ENV{PILOT_RUST_TARGET_DIR}" STREQUAL "")
         file(TO_CMAKE_PATH "$ENV{PILOT_RUST_TARGET_DIR}" RUST_CARGO_TARGET_DIR)
     elseif(WIN32)
