@@ -11,11 +11,6 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 file(GLOB_RECURSE WINPILOT_HEADERS "include/Pilot/*.h")
 file(GLOB_RECURSE WINPILOT_SOURCES "src/*.cpp" "src/*.h")
 
-add_library(winpilot SHARED ${WINPILOT_SOURCES} ${WINPILOT_HEADERS})
-target_include_directories(winpilot PUBLIC include)
-target_include_directories(winpilot PRIVATE src)
-target_link_libraries(winpilot PRIVATE wininet psapi)
-
 # ---- LiveKit availability ----
 # LiveKit Rust FFI only supports x64/arm64 on Windows.
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -24,6 +19,15 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 else()
     set(PILOT_ENABLE_LIVEKIT ON)
 endif()
+
+if(NOT PILOT_ENABLE_LIVEKIT)
+    list(FILTER WINPILOT_SOURCES EXCLUDE REGEX ".*PilotLiveKitPublisher\\.(cpp|h)$")
+endif()
+
+add_library(winpilot SHARED ${WINPILOT_SOURCES} ${WINPILOT_HEADERS})
+target_include_directories(winpilot PUBLIC include)
+target_include_directories(winpilot PRIVATE src)
+target_link_libraries(winpilot PRIVATE wininet psapi)
 
 if(NOT PILOT_ENABLE_LIVEKIT)
     target_compile_definitions(winpilot PRIVATE PILOT_NO_LIVEKIT)
